@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { Complaint } from "../models/complaint";
 import axios, { AxiosError } from "axios";
-import { complaintStatus } from "../constants/constants";
+import { complaintStatus, staffFilterOptions } from "../constants/constants";
 
 export interface ComplaintData {
   title: string;
@@ -21,20 +21,37 @@ export interface CourseUploadData {
   totalUnitsForSemester: number;
 }
 
+export interface ComplaintUpdate {
+  id: string;
+  status: string;
+  response: string;
+}
+
 interface ComplaintClient {
   loading: boolean;
   isComplaintDialogOpen: boolean;
   setIsComplaintDialogOpen: (value: boolean) => void;
   filter?: string;
   setFilter: (value: string) => void;
+  staffFilter?: string;
+  setStaffFilter: (value: string) => void;
+  filterStaffComplaint: () => void;
   complaints: Complaint[];
   searchedComplaints: Complaint[];
   originalComplaints?: Complaint[];
+  staffResolvedComplaints: Complaint[];
+  allComplaints: Complaint[];
+  staffComplaints: Complaint[];
+  staffOriginalComplaints: Complaint[];
   filterComplaint: () => void;
   searchComplaint: (searchQuery: string) => void;
   getStudentsComplaints: () => Promise<void>;
   submitComplaint: (complaintData: ComplaintData) => Promise<boolean>;
   submitCourseUpload: (uploadData: CourseUploadData) => Promise<boolean>;
+  getStaffResolvedComplaints: () => Promise<void>;
+  getStaffComplaints: () => Promise<void>;
+  getAllComplaints: () => Promise<void>;
+  updateComplaint: (data: ComplaintUpdate) => Promise<void>;
 }
 
 const api = axios.create({
@@ -52,9 +69,14 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
     set({ isComplaintDialogOpen: value });
   },
   filter: undefined,
+  staffFilter: undefined,
   complaints: [],
   searchedComplaints: [],
   originalComplaints: [],
+  staffResolvedComplaints: [],
+  staffComplaints: [],
+  staffOriginalComplaints: [],
+  allComplaints: [],
   filterComplaint: () => {
     const currentFilter = get().filter;
     const originalComplaints = get().originalComplaints;
@@ -68,6 +90,47 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
 
     if (currentFilter === complaintStatus[0]) {
       set({ complaints: originalComplaints });
+      return;
+    }
+
+    const filteredComplaints = originalComplaints.filter((complaint) => {
+      const assignment = complaint.complaintAssignment;
+      const assignedAt = assignment?.assignedAt
+        ? new Date(assignment.assignedAt)
+        : null;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+      if (currentFilter.toLowerCase() === "resolved") {
+        return assignment?.status === "resolved";
+      } else if (currentFilter.toLowerCase() === "new") {
+        return assignedAt && assignedAt >= today; // Assigned today
+      } else if (currentFilter.toLowerCase() === "ongoing") {
+        return (
+          assignedAt && assignedAt < today && assignment?.status !== "resolved"
+        );
+      }
+
+      return true; // Return all if no filter matches
+    });
+
+    console.log(filteredComplaints);
+
+    set({ staffComplaints: filteredComplaints });
+  },
+  filterStaffComplaint: () => {
+    const currentFilter = get().filter;
+    const originalComplaints = get().staffOriginalComplaints;
+
+    console.log(currentFilter);
+
+    if (!currentFilter || !originalComplaints) {
+      console.log("something");
+      return;
+    }
+
+    if (currentFilter === staffFilterOptions[0]) {
+      set({ staffComplaints: originalComplaints });
       return;
     }
 
@@ -111,6 +174,10 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
   setFilter: (value: string) => {
     set({ filter: value });
     get().filterComplaint();
+  },
+  setStaffFilter: (value: string) => {
+    set({ staffFilter: value });
+    get().filterStaffComplaint();
   },
   getStudentsComplaints: async () => {
     set({ loading: true });
@@ -234,6 +301,110 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
     } catch (err) {
       console.error(err);
       return false;
+    } finally {
+      set({ loading: false });
+    }
+  },
+  getStaffResolvedComplaints: async () => {
+    set({ loading: true });
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.get("/staff/resolved-complaints", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status !== 200) {
+        return;
+      }
+
+      const complaints = response.data.data.map((complaint) =>
+        Complaint.fromJson(complaint)
+      );
+
+      set({ staffResolvedComplaints: complaints });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  getStaffComplaints: async () => {
+    set({ loading: true });
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await api.get("/staff/complaints", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status !== 200) {
+        console.error("An error occured");
+        return;
+      }
+
+      const staffComplaints = response.data.data.map((complaint) =>
+        Complaint.fromJson(complaint)
+      );
+      console.log(staffComplaints);
+
+      set({ staffComplaints, staffOriginalComplaints: staffComplaints });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  getAllComplaints: async () => {
+    set({ loading: true });
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await api.get("/complaint", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status !== 200) {
+        console.error("An error occured");
+        return;
+      }
+
+      const allComplaints = response.data.data.map((complaint) =>
+        Complaint.fromJson(complaint)
+      );
+
+      console.log(allComplaints);
+
+      set({ allComplaints });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  updateComplaint: async (data: ComplaintUpdate) => {
+    set({ loading: true });
+
+    try {
+      const token = localStorage.getItem("token");
+      // const body = {id: data.id, status: data.title}
+      const response = await api.patch("/staff/update-complaint", data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        return;
+      }
+
+      console.log(response.data);
+      await get().getStaffComplaints();
+    } catch (err) {
+      console.error(err);
     } finally {
       set({ loading: false });
     }

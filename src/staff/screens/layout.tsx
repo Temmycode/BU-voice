@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import StudentSideBar from "./sidebar";
+import StaffSideBar from "./sidebar";
 
-function StudentDashboardLayout() {
+function StaffDashboardLayout() {
   return (
     <div className="flex h-screen overflow-hidden ">
-      <StudentSideBar />
+      <StaffSideBar />
       <main className="flex-1">
         {/* <div className="py-6 flex justify-between items-center" /> */}
         <Outlet />
@@ -13,4 +13,4 @@ function StudentDashboardLayout() {
   );
 }
 
-export default StudentDashboardLayout;
+export default StaffDashboardLayout;

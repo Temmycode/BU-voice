@@ -1,6 +1,7 @@
 import {
   UserRound,
   Ticket,
+  Settings,
   // Settings
 } from "lucide-react";
 
@@ -80,10 +81,51 @@ export const menuItems = [
   // },
 ];
 
+export const staffMenuItems = [
+  {
+    path: "/staff",
+    name: "Dashboard",
+    icon: <Ticket className="w-6 h-6 " />,
+  },
+  {
+    path: "/staff/profile",
+    name: "Profile",
+    icon: <UserRound className="w-6 h-6" />,
+  },
+  {
+    path: "/staff/settings",
+    name: "Settings",
+    icon: <Settings className="w-6 h-6" />,
+  },
+];
+
 export const complaintStatus = [
   "All",
   "Unassigned",
   "Assigned",
   "Resolved",
   "Escalated",
+];
+
+export const staffFilterOptions = ["All", "New", "On-Going", "Resolved"];
+
+export const universityHalls = [
+  "Winslow",
+  "Gideon Troopers",
+  "Nelson Mandela",
+  "Welch",
+  "Neal Wilson",
+  "Emerald",
+  "Topaz",
+  "Bethel",
+  "Samuel Akande",
+  "Havilah Gold",
+  "Crystal Hall",
+  "Queen Esther",
+  "White",
+  "Ogden",
+  "Diamond",
+  "Saphaire",
+  "Felicia Ada Devho",
+  "Niberg",
 ];

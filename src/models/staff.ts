@@ -1,22 +1,46 @@
+export class Role {
+  id: number;
+  name: string;
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+
+  static fromJson(json: any): Role {
+    return new Role(json.id, json.name);
+  }
+
+  toJson(): object {
+    return {
+      id: this.id,
+      name: this.name,
+    };
+  }
+}
+
 export class Staff {
   id: number;
   email: string;
   fullname: string;
-  role: string;
-  createdAt: Date;
+  imageUrl: string;
+  role: Role;
+  created_at: Date;
 
   constructor(
     id: number,
     email: string,
     fullname: string,
-    role: string,
-    createdAt: Date
+    imageUrl: string,
+    role: Role,
+    created_at: Date
   ) {
     this.id = id;
     this.email = email;
     this.fullname = fullname;
     this.role = role;
-    this.createdAt = createdAt;
+    this.imageUrl = imageUrl;
+    this.created_at = created_at;
   }
 
   static fromJson(json: any): Staff {
@@ -24,8 +48,20 @@ export class Staff {
       json.id,
       json.email,
       json.fullname,
-      json.role.name,
+      json.image_url,
+      Role.fromJson(json.role),
       new Date(json.created_at)
     );
+  }
+
+  toJson(): object {
+    return {
+      id: this.id,
+      email: this.email,
+      fullname: this.fullname,
+      image_url: this.imageUrl,
+      role: this.role.toJson(),
+      created_at: this.created_at.toISOString(),
+    };
   }
 }

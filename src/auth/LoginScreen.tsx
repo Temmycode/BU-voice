@@ -9,25 +9,67 @@ import { LucideLogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthClientStore } from "../clients/authClientStore";
 import { useAlert } from "../providers/AlertContext";
+import { useSearchParams } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 function LoginScreen() {
   const { showAlert } = useAlert();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get("role");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { loading, studentLogin } = useAuthClientStore();
+  const { loading, studentLogin, staffLogin } = useAuthClientStore();
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const navigate = useNavigate();
 
   async function login() {
-    const result = await studentLogin(email, password);
-    if (result) {
-      showAlert("Successfully logged in", "success");
-      navigate("/student");
+    let result: boolean;
+
+    if (role === "student") {
+      result = await studentLogin(email, password);
+      if (result) {
+        showAlert("Successfully logged in", "success");
+        navigate("/student");
+      } else {
+        showAlert("Invalid credentials", "error");
+      }
     } else {
-      showAlert("Invalid credentials", "error");
+      result = await staffLogin(email, password);
+      if (result) {
+        showAlert("Successfully logged in", "success");
+        navigate("/staff");
+      } else {
+        showAlert("Invalid credentials", "error");
+      }
     }
   }
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/google/student-login",
+          { token: tokenResponse.access_token },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        const data = response.data;
+        console.log("User Logged In:", response.status);
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(data.data.student.toJson())
+        );
+      } catch (error) {
+        console.error("Login failed", error);
+      }
+    },
+    onError: (error) => console.error("Google Login Error:", error),
+  });
 
   const ButtonData = () => {
     if (loading) {
@@ -50,7 +92,7 @@ function LoginScreen() {
             Sign In To Your Account.
           </h1>
           <p className="text-base md:text-lg font-normal text-secondary-black">
-            Unleash your inner sloth 4.0 right now.
+            Speak and let your voice be heard.
           </p>
         </div>
         <div className="mb-3">
@@ -113,7 +155,7 @@ function LoginScreen() {
             Don’t have an account?
             <button
               onClick={() => {
-                navigate("/signup");
+                navigate(`/signup?role=${role}`);
               }}
               className="text-primary-purple ml-1"
             >
@@ -127,7 +169,10 @@ function LoginScreen() {
           <div className="border-1 w-full h-0 ml-3 b border-border-color" />
         </div>
 
-        <div className="flex flex-row w-full bg-white border-1 border-border-color py-3 mt-8 font-bold mb-6 text-center rounded-full cursor-pointer items-center justify-center ">
+        <div
+          onClick={() => handleGoogleLogin()}
+          className="flex flex-row w-full bg-white border-1 border-border-color py-3 mt-8 font-bold mb-6 text-center rounded-full cursor-pointer items-center justify-center "
+        >
           <img src={google} className="mr-3" />
           <span className="font-bold text-primary-black text-base cursor-pointer">
             Sign Up With Google

@@ -2,7 +2,7 @@ import { ComplaintAssignment } from "./complaintAssignment";
 import { ComplaintCategory } from "./complaintCategory";
 
 export class Complaint {
-  id: number;
+  id: string;
   studentId: number;
   category?: ComplaintCategory;
   priorityId: number | null;
@@ -14,7 +14,7 @@ export class Complaint {
   createdAt: Date;
 
   constructor(
-    id: number,
+    id: string,
     studentId: number,
     category: ComplaintCategory,
     priorityId: number | null,
