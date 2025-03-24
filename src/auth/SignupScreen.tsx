@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Dispatch,
-  ForwardRefExoticComponent,
-  RefAttributes,
-  SetStateAction,
-  useState,
-} from "react";
+import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -20,7 +14,6 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  LucideProps,
 } from "lucide-react";
 import ClipLoader from "react-spinners/ClipLoader";
 import google from "../assets/google.svg";
@@ -37,85 +30,81 @@ const TextField = ({
   onChange,
   placeholder,
   hint,
-  icon: Icon,
+  icon,
   type = "text",
   isSecured = false,
   error = "",
-}) =>
-  // : {
-  //   value: string;
-  //   onChange: Dispatch<SetStateAction<string>>;
-  //   placeholder: string;
-  //   hint: string;
-  //   icon: ForwardRefExoticComponent<
-  //     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
-  //   >;
-  //   type: string;
-  //   isSecured: boolean;
-  //   error: string;
-  // }
-  {
-    const [focused, setFocused] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder: string;
+  hint: string;
+  icon: React.ElementType;
+  type: string;
+  isSecured: boolean;
+  error: string;
+}) => {
+  const [focused, setFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-    const inputType = isSecured
-      ? showPassword
-        ? "text"
-        : "password"
-      : type || "text";
+  const inputType = isSecured
+    ? showPassword
+      ? "text"
+      : "password"
+    : type || "text";
 
-    return (
-      <motion.div
-        className="w-full relative"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <label className="block text-sm font-medium text-[#475569] mb-1.5">
-          {hint}
-        </label>
-        <div
-          className={`flex items-center border ${
-            focused
-              ? "border-[#4f46e5] ring-1 ring-[#4f46e5]/20"
-              : "border-[#cbd5e1]"
-          } 
+  return (
+    <motion.div
+      className="w-full relative"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <label className="block text-sm font-medium text-[#475569] mb-1.5">
+        {hint}
+      </label>
+      <div
+        className={`flex items-center border ${
+          focused
+            ? "border-[#4f46e5] ring-1 ring-[#4f46e5]/20"
+            : "border-[#cbd5e1]"
+        } 
                    ${error ? "border-red-500 bg-red-50" : "bg-white"} 
                    rounded-lg px-3 py-2.5 transition-all duration-200`}
-        >
-          <Icon
-            className={`w-5 h-5 mr-2 ${
-              focused ? "text-[#4f46e5]" : "text-[#94a3b8]"
-            }`}
-          />
-          <input
-            type={inputType}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            className="flex-1 bg-transparent text-sm outline-none text-[#1e293b] placeholder-[#94a3b8]"
-          />
-          {isSecured && (
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-[#94a3b8] hover:text-[#4f46e5] transition-colors"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          )}
-        </div>
-        {error && (
-          <div className="text-red-500 text-xs mt-1 flex items-center">
-            <AlertCircle size={12} className="mr-1" />
-            {error}
-          </div>
+      >
+        <Icon
+          className={`w-5 h-5 mr-2 ${
+            focused ? "text-[#4f46e5]" : "text-[#94a3b8]"
+          }`}
+        />
+        <input
+          type={inputType}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="flex-1 bg-transparent text-sm outline-none text-[#1e293b] placeholder-[#94a3b8]"
+        />
+        {isSecured && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="text-[#94a3b8] hover:text-[#4f46e5] transition-colors"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
         )}
-      </motion.div>
-    );
-  };
+      </div>
+      {error && (
+        <div className="text-red-500 text-xs mt-1 flex items-center">
+          <AlertCircle size={12} className="mr-1" />
+          {error}
+        </div>
+      )}
+    </motion.div>
+  );
+};
 
 // Password strength indicator component
 const PasswordStrengthIndicator = ({ password }: { password: string }) => {

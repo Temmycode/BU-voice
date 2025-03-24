@@ -28,16 +28,22 @@ interface ComplaintDetailViewProps {
 }
 
 // Status step mapping
-const statusSteps = {
-  pending: 0,
-  "in progress": 1,
-  resolved: 2,
-  rejected: -1,
-  "on hold": 0.5,
-};
+// const statusSteps = {
+//   pending: 0,
+//   "in progress": 1,
+//   resolved: 2,
+//   rejected: -1,
+//   "on hold": 0.5,
+// };
 
 // Status colors
-const statusColors = {
+const statusColors: {
+  pending: string;
+  "in progress": string;
+  resolved: string;
+  rejected: string;
+  "on hold": string;
+} = {
   pending: "bg-yellow-500",
   "in progress": "bg-blue-500",
   resolved: "bg-green-500",
@@ -125,7 +131,13 @@ export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
 
   const status =
     complaint.complaintAssignment?.status?.toLowerCase() || "pending";
-  const currentStep = statusSteps[status];
+  // const currentStep: {
+  //   pending: number;
+  //   "in progress": number;
+  //   resolved: number;
+  //   rejected: number;
+  //   "on hold": number;
+  // } = statusSteps[status];
   const priorityId = complaint.priorityId || 1;
 
   return (
@@ -199,9 +211,11 @@ export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Status</h3>
             <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]} text-primary-black`}
+              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                statusColors[status as keyof typeof statusColors]
+              } text-primary-black`}
             >
-              {statusIcons[status]}
+              {statusIcons[status as keyof typeof statusIcons]}
               <span className="ml-1.5">{capitalizeFirstLetter(status)}</span>
             </div>
           </div>
@@ -209,14 +223,16 @@ export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Priority</h3>
             <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${priorityColors[priorityId]}`}
+              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                priorityColors[priorityId as keyof typeof priorityColors]
+              }`}
             >
               {priorityId >= 3 ? (
                 <AlertCircle className="h-4 w-4 mr-1" />
               ) : (
                 <Tag className="h-4 w-4 mr-1" />
               )}
-              {priorityLabels[priorityId]}
+              {priorityLabels[priorityId as keyof typeof priorityLabels]}
             </div>
           </div>
         </motion.div>

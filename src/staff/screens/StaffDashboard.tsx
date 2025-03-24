@@ -621,9 +621,9 @@ export default function StaffDashboard() {
               <select
                 value={assignedStaff?.id}
                 onChange={(e) => {
-                  const staff = departmentStaffs
-                    .filter((staff) => staff.id === Number(e.target.value))
-                    .at(0);
+                  const staff = departmentStaffs.filter(
+                    (staff) => staff.id === Number(e.target.value)
+                  )[0];
                   setAssignedStaff(staff!);
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f46e5]/20 focus:border-[#4f46e5]"

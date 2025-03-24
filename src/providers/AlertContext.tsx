@@ -1,15 +1,14 @@
 import { createContext, useState, useContext, ReactNode } from "react";
 
+type AlertType = "success" | "error" | "warning" | "info";
+
 interface AlertContextType {
   alert: {
     open: boolean;
     message: string;
-    severity: "success" | "error" | "warning" | "info";
+    severity: AlertType;
   };
-  showAlert: (
-    message: string,
-    severity?: "success" | "error" | "warning" | "info"
-  ) => void;
+  showAlert: (message: string, severity?: AlertType) => void;
   closeAlert: () => void;
 }
 
@@ -20,16 +19,17 @@ interface AlertProviderProps {
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
 
 export const AlertProvider = ({ children }: AlertProviderProps) => {
-  const [alert, setAlert] = useState({
+  const [alert, setAlert] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertType;
+  }>({
     open: false,
     message: "",
-    severity: "success" as const,
+    severity: "success",
   });
 
-  const showAlert = (
-    message: string,
-    severity: "success" | "error" | "warning" | "info" = "success"
-  ) => {
+  const showAlert = (message: string, severity: AlertType = "success") => {
     setAlert({ open: true, message, severity });
   };
 
