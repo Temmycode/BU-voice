@@ -58,9 +58,7 @@ export const ComplaintTile = ({
   onClick: () => void;
 }) => {
   const formattedDate = formatDate(complaint.createdAt);
-  const status =
-    complaint.complaintAssignment?.status?.toLowerCase() ||
-    complaint.status.toLowerCase();
+  const status = complaint.complaintAssignment?.status?.toLowerCase();
   const time = formatTime(complaint.createdAt);
 
   // Truncate description to 100 characters

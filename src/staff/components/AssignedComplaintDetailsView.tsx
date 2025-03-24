@@ -21,6 +21,9 @@ import type { Complaint } from "../../models/complaint";
 import { formatDate, formatTime } from "../../utils/dateFormatter";
 import { ClipLoader } from "react-spinners";
 import { useComplaintClientStore } from "../../clients/complaintClientStore";
+import { Student } from "../../models/student";
+import { motion } from "framer-motion";
+import ProgressTracker from "../../components/ProgressTracker";
 
 // Status step mapping for progress tracker
 const statusSteps: Record<string, number> = {
@@ -67,11 +70,11 @@ const AssignedComplaintDetailsView: React.FC<ComplaintDetailViewProps> = ({
   complaint,
   onClose,
 }) => {
-  const complaintStore = useComplaintClientStore();
   const [isResponseDialogOpen, setIsResponseDialogOpen] = useState(false);
   const [responseText, setResponseText] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { staffComplaintRespond } = useComplaintClientStore();
 
   if (!complaint) {
     return (
@@ -96,12 +99,12 @@ const AssignedComplaintDetailsView: React.FC<ComplaintDetailViewProps> = ({
   }
 
   const status =
-    complaint.complaintAssignment?.status?.toLowerCase() ||
+    // complaint.complaintAssignment?.status?.toLowerCase() ||
     complaint.status.toLowerCase();
   const currentStep = statusSteps[status];
   const priorityId = complaint.priorityId;
 
-  const handleOpenResponseDialog = () => {
+  const handleOpenResponseDialog = async () => {
     setIsResponseDialogOpen(true);
     // Pre-fill with current status if it exists
     if (status) {
@@ -118,12 +121,7 @@ const AssignedComplaintDetailsView: React.FC<ComplaintDetailViewProps> = ({
   const handleSubmitResponse = async () => {
     try {
       setIsSubmitting(true);
-      await complaintStore.updateComplaint({
-        id: complaint.id,
-        status: selectedStatus,
-        response: responseText,
-      });
-
+      await staffComplaintRespond(responseText, selectedStatus, complaint!.id);
       // Close dialog after successful submission
       setIsResponseDialogOpen(false);
       setResponseText("");
@@ -203,104 +201,14 @@ const AssignedComplaintDetailsView: React.FC<ComplaintDetailViewProps> = ({
           </div>
 
           {/* Progress Tracker */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="mb-4">
             <h3 className="text-sm font-medium text-gray-500 mb-3">
               Complaint Progress
             </h3>
-
-            {status === "rejected" ? (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-                <XCircle className="text-red-500 h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-red-700">
-                    Complaint Rejected
-                  </h4>
-                  <p className="text-sm text-red-600 mt-1">
-                    {complaint.complaintAssignment?.response ||
-                      "This complaint has been reviewed and cannot be processed further."}
-                  </p>
-                </div>
-              </div>
-            ) : status === "on hold" ? (
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-start">
-                <AlertCircle className="text-purple-500 h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-purple-700">
-                    Complaint On Hold
-                  </h4>
-                  <p className="text-sm text-purple-600 mt-1">
-                    {complaint.complaintAssignment?.response ||
-                      "This complaint is currently on hold. We'll update when there's progress."}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="flex justify-between mb-2">
-                  <div className="text-center flex-1">
-                    <div
-                      className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                        currentStep >= 0
-                          ? "bg-[#4f46e5] text-white"
-                          : "bg-gray-200 text-gray-500"
-                      }`}
-                    >
-                      <Clock className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs mt-1 block font-medium">
-                      Submitted
-                    </span>
-                  </div>
-                  <div className="text-center flex-1">
-                    <div
-                      className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                        currentStep >= 1
-                          ? "bg-[#4f46e5] text-white"
-                          : "bg-gray-200 text-gray-500"
-                      }`}
-                    >
-                      <MessageSquare className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs mt-1 block font-medium">
-                      In Progress
-                    </span>
-                  </div>
-                  <div className="text-center flex-1">
-                    <div
-                      className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                        currentStep >= 2
-                          ? "bg-[#4f46e5] text-white"
-                          : "bg-gray-200 text-gray-500"
-                      }`}
-                    >
-                      <CheckCircle className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs mt-1 block font-medium">
-                      Resolved
-                    </span>
-                  </div>
-                </div>
-
-                {/* Progress bar */}
-                <div className="h-1 absolute top-5 left-0 right-0 mx-10 bg-gray-200">
-                  <div
-                    className="h-full bg-[#4f46e5] transition-all duration-500"
-                    style={{
-                      width:
-                        currentStep === 0
-                          ? "0%"
-                          : currentStep === 0.5
-                          ? "25%"
-                          : currentStep === 1
-                          ? "50%"
-                          : currentStep === 2
-                          ? "100%"
-                          : "0%",
-                    }}
-                  ></div>
-                </div>
-              </div>
-            )}
+            <ProgressTracker
+              status={status}
+              response={complaint.complaintAssignment?.response ?? "Empty"}
+            />
           </div>
 
           {/* Status and Priority */}

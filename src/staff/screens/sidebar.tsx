@@ -18,6 +18,7 @@ import { useSidebarStore } from "../../providers/SidebarProvider";
 import { Staff } from "../../models/staff";
 import { getInitials } from "../../utils/dateFormatter";
 import { useComplaintClientStore } from "../../clients/complaintClientStore";
+import NavItem from "../../components/NavItem";
 
 function StaffSideBar() {
   const authStore = useAuthClientStore();
@@ -103,18 +104,15 @@ function StaffSideBar() {
       {/* Navigation Links */}
       <nav className="flex-1 px-2">
         <ul className="space-y-1">
-          <li>
-            <div
-              onClick={() => navigate("/staff")}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all bg-[#4f46e5]/10 text-[#4f46e5]`}
-            >
-              <BarChart2 className="h-5 w-5" />
-              {!sidebarProvider.sidebarCollapsed && (
-                <span className="font-medium text-sm">Dashboard</span>
-              )}
-            </div>
-          </li>
-          <li>
+          {userInfo.role.id < 4 ? (
+            <NavItem
+              path="/staff"
+              icon={<BarChart2 className="h-5 w-5" />}
+              label="Dashboard"
+              collapsed={sidebarProvider.sidebarCollapsed}
+            />
+          ) : null}
+          {/* <li>
             <div
               onClick={() => navigate("/staff/complaints")}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-[#475569] hover:bg-gray-100`}
@@ -129,45 +127,13 @@ function StaffSideBar() {
                 </span>
               )}
             </div>
-          </li>
-          <li>
-            <div
-              onClick={() => navigate("/staff/assigned")}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-[#475569] hover:bg-gray-100`}
-            >
-              <User className="h-5 w-5 text-gray-500" />
-              {!sidebarProvider.sidebarCollapsed && (
-                <span className="font-medium text-sm">Assigned to Me</span>
-              )}
-            </div>
-          </li>
-          <li>
-            <div
-              onClick={() => navigate("/staff/pending")}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-[#475569] hover:bg-gray-100`}
-            >
-              <Clock className="h-5 w-5 text-gray-500" />
-              {!sidebarProvider.sidebarCollapsed && (
-                <span className="font-medium text-sm">Pending</span>
-              )}
-              {!sidebarProvider.sidebarCollapsed && (
-                <span className="ml-auto bg-gray-100 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">
-                  {dashboardStats.pendingComplaints}
-                </span>
-              )}
-            </div>
-          </li>
-          <li>
-            <div
-              onClick={() => navigate("/staff/resolved")}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-[#475569] hover:bg-gray-100`}
-            >
-              <CheckCircle className="h-5 w-5 text-gray-500" />
-              {!sidebarProvider.sidebarCollapsed && (
-                <span className="font-medium text-sm">Resolved</span>
-              )}
-            </div>
-          </li>
+          </li> */}
+          <NavItem
+            path="/staff/assigned"
+            icon={<User className="h-5 w-5 text-gray-500" />}
+            label="Assigned to Me"
+            collapsed={sidebarProvider.sidebarCollapsed}
+          />
         </ul>
       </nav>
 

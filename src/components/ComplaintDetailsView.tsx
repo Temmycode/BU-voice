@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock,
@@ -19,6 +19,9 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Complaint } from "../models/complaint";
 import { formatDate, formatTime } from "../utils/dateFormatter";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
+import { useComplaintClientStore } from "../clients/complaintClientStore";
+import { useSidebarStore } from "../providers/SidebarProvider";
+import ProgressTracker from "./ProgressTracker";
 
 interface ComplaintDetailViewProps {
   complaint: Complaint | null;
@@ -69,6 +72,31 @@ const priorityColors = {
 export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
   complaint,
 }) => {
+  const sidebarStore = useSidebarStore();
+  const [followUpMessage, setFollowUpMessage] = useState("");
+  const { studentComplaintFollowUp } = useComplaintClientStore();
+
+  const handleOpenResponseDialog = () => {
+    sidebarStore.setIsResponseDialogOpen(true);
+  };
+
+  const handleCloseResponseDialog = () => {
+    sidebarStore.setIsResponseDialogOpen(false);
+  };
+
+  const handleSubmitResponse = async () => {
+    console.log(followUpMessage.length);
+    if (followUpMessage.length > 0) {
+      followUp();
+    }
+
+    sidebarStore.setIsResponseDialogOpen(false);
+  };
+
+  async function followUp() {
+    await studentComplaintFollowUp(followUpMessage, complaint!.id!);
+  }
+
   if (!complaint) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-gray-500">
@@ -155,100 +183,10 @@ export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
           <h3 className="text-sm font-medium text-gray-500 mb-3">
             Complaint Progress
           </h3>
-
-          {status === "rejected" ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-              <XCircle className="text-red-500 h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-              <div>
-                <h4 className="font-medium text-red-700">Complaint Rejected</h4>
-                <p className="text-sm text-red-600 mt-1">
-                  {complaint.complaintAssignment?.response ||
-                    "Your complaint has been reviewed and cannot be processed further."}
-                </p>
-              </div>
-            </div>
-          ) : status === "on hold" ? (
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 flex items-start">
-              <AlertCircle className="text-purple-500 h-5 w-5 mr-3 mt-0.5 flex-shrink-0" />
-              <div>
-                <h4 className="font-medium text-purple-700">
-                  Complaint On Hold
-                </h4>
-                <p className="text-sm text-purple-600 mt-1">
-                  {complaint.complaintAssignment?.response ||
-                    "Your complaint is currently on hold. We'll update you when there's progress."}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="relative">
-              <div className="flex justify-between mb-2">
-                <div className="text-center flex-1">
-                  <div
-                    className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                      currentStep >= 0
-                        ? "bg-[#4f46e5] text-white"
-                        : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    <Clock className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs mt-1 block font-medium">
-                    Submitted
-                  </span>
-                </div>
-                <div className="text-center flex-1">
-                  <div
-                    className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                      currentStep >= 1
-                        ? "bg-[#4f46e5] text-white"
-                        : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs mt-1 block font-medium">
-                    In Progress
-                  </span>
-                </div>
-                <div className="text-center flex-1">
-                  <div
-                    className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center ${
-                      currentStep >= 2
-                        ? "bg-[#4f46e5] text-white"
-                        : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs mt-1 block font-medium">
-                    Resolved
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="h-1 absolute top-5 left-0 right-0 mx-10 bg-gray-200">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{
-                    width:
-                      currentStep === 0
-                        ? "0%"
-                        : currentStep === 0.5
-                        ? "25%"
-                        : currentStep === 1
-                        ? "50%"
-                        : currentStep === 2
-                        ? "100%"
-                        : "0%",
-                  }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="h-full bg-[#4f46e5]"
-                />
-              </div>
-            </div>
-          )}
+          <ProgressTracker
+            status={status}
+            response={complaint.complaintAssignment?.response ?? "Empty"}
+          />
         </motion.div>
 
         {/* Status and Priority */}
@@ -311,6 +249,21 @@ export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
           </h3>
           <p className="text-[#1e293b] whitespace-pre-line">
             {complaint.description}
+          </p>
+        </motion.div>
+
+        {/* Staff Response */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="bg-gray-50 p-4 rounded-lg"
+        >
+          <h3 className="text-sm font-medium text-gray-500 mb-2">
+            Staff Response
+          </h3>
+          <p className="text-[#1e293b] whitespace-pre-line">
+            {complaint?.complaintAssignment?.response ?? "Empty"}
           </p>
         </motion.div>
 
@@ -504,11 +457,67 @@ export const ComplaintDetailView: React.FC<ComplaintDetailViewProps> = ({
             transition={{ delay: 1.1 }}
             className="mt-2"
           >
-            <button className="w-full bg-[#4f46e5] text-white py-3 rounded-lg font-medium flex items-center justify-center hover:bg-[#4338ca] transition-colors">
+            <button
+              onClick={handleOpenResponseDialog}
+              className="w-full bg-[#4f46e5] text-white py-3 rounded-lg font-medium flex items-center justify-center hover:bg-[#4338ca] transition-colors"
+            >
               <MessageSquare className="h-5 w-5 mr-2" />
               Send Follow-up Message
             </button>
           </motion.div>
+        )}
+
+        {/* Response Dialog */}
+        {sidebarStore.isResponseDialogOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h2 className="text-xl font-bold mb-4">
+                Send a Follow Up Message
+              </h2>
+
+              {complaint && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium text-sm text-gray-500">
+                    Complaint
+                  </h3>
+                  <p className="font-medium">{complaint.title}</p>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-1">
+                  Message
+                </label>
+                <textarea
+                  placeholder="Enter your response to the student..."
+                  value={followUpMessage}
+                  onChange={(e) => setFollowUpMessage(e.target.value)}
+                  rows={5}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4f46e5]/20 focus:border-[#4f46e5]"
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={handleCloseResponseDialog}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitResponse}
+                  disabled={!followUpMessage}
+                  className={`px-4 py-2 rounded-lg ${
+                    followUpMessage
+                      ? "bg-[#4f46e5] text-white hover:bg-[#4338ca]"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  } transition-colors`}
+                >
+                  Submit Response
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </motion.div>
     </AnimatePresence>

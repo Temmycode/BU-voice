@@ -23,6 +23,8 @@ export class Staff {
   id: number;
   email: string;
   fullname: string;
+  department: string;
+  hallName: string | null;
   imageUrl: string;
   role: Role;
   created_at: Date;
@@ -31,6 +33,8 @@ export class Staff {
     id: number,
     email: string,
     fullname: string,
+    department: string,
+    hallName: string | null,
     imageUrl: string,
     role: Role,
     created_at: Date
@@ -39,6 +43,8 @@ export class Staff {
     this.email = email;
     this.fullname = fullname;
     this.role = role;
+    this.department = department;
+    this.hallName = hallName;
     this.imageUrl = imageUrl;
     this.created_at = created_at;
   }
@@ -48,6 +54,8 @@ export class Staff {
       json.id,
       json.email,
       json.fullname,
+      json.department,
+      json.hall_name,
       json.image_url,
       Role.fromJson(json.role),
       new Date(json.created_at)
@@ -59,6 +67,8 @@ export class Staff {
       id: this.id,
       email: this.email,
       fullname: this.fullname,
+      department: this.department,
+      hall_name: this.hallName,
       image_url: this.imageUrl,
       role: this.role.toJson(),
       created_at: this.created_at.toISOString(),

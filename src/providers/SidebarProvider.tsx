@@ -1,6 +1,8 @@
 import { create } from "zustand";
 
 interface SideBarProps {
+  selectedRoute: string;
+  setSelectedRoute: (value: string) => void;
   sidebarCollapsed: boolean;
   setSidebarCollapsed: (value: boolean) => void;
   mobileMenuOpen: boolean;
@@ -14,6 +16,10 @@ interface SideBarProps {
 }
 
 export const useSidebarStore = create<SideBarProps>((set) => ({
+  selectedRoute: "",
+  setSelectedRoute(value) {
+    set({ selectedRoute: value });
+  },
   sidebarCollapsed: false,
   setSidebarCollapsed: (value: boolean) => {
     set({ sidebarCollapsed: value });

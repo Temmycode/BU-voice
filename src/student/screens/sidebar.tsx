@@ -7,6 +7,7 @@ import { menuItems } from "../../constants/constants";
 import { useAuthClientStore } from "../../clients/authClientStore";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Student } from "../../models/student";
 
 // ProfilePicture component
 const ProfilePicture = ({
@@ -14,16 +15,14 @@ const ProfilePicture = ({
   name,
 }: {
   imageUrl?: string;
-  name?: string;
+  name: string;
 }) => {
   const initials = name
-    ? name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .substring(0, 2)
-    : "BU";
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .substring(0, 2);
 
   return (
     <div className="relative w-9 h-9 rounded-full overflow-hidden bg-[#4f46e5] flex items-center justify-center text-white font-medium">
@@ -60,9 +59,13 @@ function StudentSideBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Get user info
-  const userInfo = JSON.parse(localStorage.getItem("user") || "{}") || {
-    fullname: "Student User",
-  };
+  const userInfo: Student = Student.fromJson(
+    JSON.parse(localStorage.getItem("user") || "{}") || {
+      fullname: "Student User",
+    }
+  );
+
+  console.log(userInfo);
 
   const handleLogout = async () => {
     setShowLogoutConfirm(false);
@@ -187,14 +190,14 @@ function StudentSideBar() {
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-[#1e293b] truncate">
-                {userInfo.fullname}
+                {userInfo.fullName}
               </p>
               <p className="text-xs text-gray-500 truncate">Student</p>
             </div>
           )}
           <ProfilePicture
-            imageUrl={userInfo.imageUrl}
-            name={userInfo.fullname}
+            imageUrl={userInfo.profileImage ?? ""}
+            name={userInfo?.fullName}
           />
         </div>
 

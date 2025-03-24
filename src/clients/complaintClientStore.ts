@@ -52,6 +52,13 @@ interface ComplaintClient {
   getStaffComplaints: () => Promise<void>;
   getAllComplaints: () => Promise<void>;
   updateComplaint: (data: ComplaintUpdate) => Promise<void>;
+  staffComplaintRespond: (
+    response: string,
+    staffStatus: string,
+    id: string
+  ) => Promise<void>;
+  studentComplaintFollowUp: (response: string, id: string) => Promise<void>;
+  reassignComplaint: (id: string, staffId: number) => Promise<boolean>;
 }
 
 const api = axios.create({
@@ -405,6 +412,103 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
       await get().getStaffComplaints();
     } catch (err) {
       console.error(err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  staffComplaintRespond: async (
+    staffResponse: string,
+    staffStatus: string,
+    id: string
+  ) => {
+    console.log(staffResponse, staffStatus, id);
+    set({ loading: true });
+
+    try {
+      const token = localStorage.getItem("token");
+      const { data, status } = await api.patch(
+        `/complaint/staff-response/${id}`,
+        {
+          response: staffResponse,
+          status: staffStatus,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (status !== 200) {
+        console.error(`An error occurred ${data}`);
+        return;
+      }
+      console.log(data);
+
+      const updatedComplaint = Complaint.fromJson(data.data);
+
+      // Update the state by replacing the complaint with the same ID
+      set((state) => ({
+        allComplaints: (state.allComplaints ?? []).map((complaint) =>
+          complaint.id === updatedComplaint.id ? updatedComplaint : complaint
+        ),
+      }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  studentComplaintFollowUp: async (studentResponse: string, id: string) => {
+    set({ loading: true });
+
+    try {
+      const { data, status } = await api.patch(
+        `/complaint/student-follow-up/${id}`,
+        null,
+        {
+          params: { response: studentResponse },
+        }
+      );
+
+      if (status !== 200) {
+        console.error(`An error occurred ${data}`);
+        return;
+      }
+
+      console.log(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  reassignComplaint: async (id: string, staffId: number) => {
+    set({ loading: true });
+
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await api.patch(
+        `/complaint/reassign-complaint/${id}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { staff_id: staffId },
+        }
+      );
+
+      console.log(data);
+
+      // Convert the returned complaint data to an object
+      const updatedComplaint = Complaint.fromJson(data.data);
+
+      // Update the state by replacing the complaint with the same ID
+      set((state) => ({
+        allComplaints: (state.allComplaints ?? []).map((complaint) =>
+          complaint.id === updatedComplaint.id ? updatedComplaint : complaint
+        ),
+      }));
+
+      return true;
+    } catch (err) {
+      console.error("Error reassigning complaint:", err);
+      return false;
     } finally {
       set({ loading: false });
     }

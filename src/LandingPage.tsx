@@ -310,7 +310,8 @@ export default function LandingPage() {
                 ></motion.div>
                 <div className="relative bg-white p-4 rounded-lg shadow-xl">
                   <img
-                    src="https://placehold.co/600x500"
+                    src="https://www.babcock.edu.ng/storage/media/4432a589-a1e9-499c-b8c4-3b91cecc86b0.png"
+                    // "https://placehold.co/600x500"
                     alt="BU Voice Dashboard"
                     className="rounded-lg w-full"
                   />
@@ -689,7 +690,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <TeamCard
-              fullname="Desmond "
+              fullname="Ijeoma Chiedozie"
               role="Project Lead"
               details="A Passionate young man filled zeal and burning passion"
             />
@@ -817,14 +818,14 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <div onClick={() => navigate("/signup?role=student")}>
-                <Button className="w-full sm:w-auto bg-white text-[#4f46e5] hover:bg-[#f8fafc] px-8 py-6 text-lg">
-                  Student Sign Up
+                <Button className="w-full sm:w-auto bg-white border-1 hover:border-[#4338ca] hover:bg-[#f8fafc] px-8 py-6 text-lg">
+                  <div className="text-primary-purple">Student Sign Up</div>
                 </Button>
               </div>
               <div onClick={() => navigate("/signup?role=admin")}>
                 <Button
                   variant="outline"
-                  className="w-full sm:w-auto border-white text-white hover:bg-[#4338ca] hover:border-[#4338ca] px-8 py-6 text-lg"
+                  className="w-full sm:w-auto border-white text-white hover:bg-[#4338ca] hover:border-[#4338ca] hover:text-[#4338ca] px-8 py-6 text-lg"
                 >
                   Admin Sign Up
                 </Button>

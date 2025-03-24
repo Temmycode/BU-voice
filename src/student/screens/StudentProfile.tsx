@@ -64,15 +64,18 @@ const StudentProfileScreen: React.FC = () => {
   const handleLogout = async () => {
     setShowLogoutConfirm(false);
     await authStore.logout();
-    navigate("/login");
+    navigate("/login?role=student");
   };
 
-  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       // Here you would upload the file to your server
       // For now, we'll just log it
       console.log("File selected:", file.name);
+      await authStore.updateStudentProfilePicture(file);
     }
   };
 

@@ -12,6 +12,7 @@ import { useAlert } from "../providers/AlertContext";
 import { useSearchParams } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { Staff } from "../models/staff";
 
 function LoginScreen() {
   const { showAlert } = useAlert();
@@ -20,6 +21,9 @@ function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { loading, studentLogin, staffLogin } = useAuthClientStore();
+  const userInfo: Staff = JSON.parse(localStorage.getItem("user") || "{}") || {
+    fullname: "Staff User",
+  };
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const navigate = useNavigate();
@@ -36,10 +40,14 @@ function LoginScreen() {
         showAlert("Invalid credentials", "error");
       }
     } else {
-      result = await staffLogin(email, password);
+      const { result, staffRoleId } = await staffLogin(email, password);
       if (result) {
         showAlert("Successfully logged in", "success");
-        navigate("/staff");
+        if (staffRoleId! < 4) {
+          navigate("/staff");
+        } else {
+          navigate("/staff/assigned");
+        }
       } else {
         showAlert("Invalid credentials", "error");
       }
@@ -95,7 +103,7 @@ function LoginScreen() {
             Speak and let your voice be heard.
           </p>
         </div>
-        <div className="mb-3">
+        <form action={login} className="mb-3">
           {/* Email */}
           <TextField
             value={email}
@@ -116,7 +124,7 @@ function LoginScreen() {
             hint="Password"
             icon={passwordImage}
           />
-        </div>
+        </form>
         {/* Remember me & Forgot Password */}
         <div className="flex flex-row justify-between mb-6">
           <div className="text-primary-black text-sm font-semibold">

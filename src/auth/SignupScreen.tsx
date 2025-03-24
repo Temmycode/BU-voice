@@ -22,6 +22,7 @@ import { useAlert } from "../providers/AlertContext";
 import { useGoogleLogin } from "@react-oauth/google";
 import Dropdown from "../components/Dropdown";
 import { universityHalls } from "../constants/constants";
+import axios from "axios";
 
 // Enhanced TextField component with animations and better styling
 const TextField = ({
@@ -99,7 +100,7 @@ const TextField = ({
 // Password strength indicator component
 const PasswordStrengthIndicator = ({ password }: { password: string }) => {
   // Simple password strength calculation
-  const getStrength = (pass) => {
+  const getStrength = (pass: string) => {
     if (!pass) return { strength: 0, label: "Empty", color: "bg-gray-200" };
     if (pass.length < 6)
       return { strength: 1, label: "Weak", color: "bg-red-500" };
@@ -172,17 +173,18 @@ function SignupScreen() {
 
   const handleGoogleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      console.log(tokenResponse);
       try {
-        const response = await fetch(
+        const { data } = await axios.post(
           "http://localhost:8000/google/student-signup",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: tokenResponse.access_token }),
-          }
+          { token: tokenResponse.access_token }
         );
+        fetch("http://localhost:8000/google/student-signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: tokenResponse.access_token }),
+        });
 
-        const data = await response.json();
         console.log("User Signed Up:", data);
         localStorage.setItem("token", data.access_token);
       } catch (error) {
@@ -190,6 +192,7 @@ function SignupScreen() {
       }
     },
     onError: (error) => console.error("Google Signup Error:", error),
+    flow: "implicit",
   });
 
   const validateForm = () => {
