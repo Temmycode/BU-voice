@@ -175,7 +175,9 @@ export const ComplaintStatus = ({ status }: { status: string }) => {
       textColor = "text-gray-800";
   }
 
-  const icon = statusIcons[normalizedStatus] || statusIcons["pending"];
+  const icon =
+    statusIcons[normalizedStatus as keyof typeof statusIcons] ||
+    statusIcons["pending"];
 
   return (
     <div

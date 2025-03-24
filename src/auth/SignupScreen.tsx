@@ -30,7 +30,7 @@ const TextField = ({
   onChange,
   placeholder,
   hint,
-  icon,
+  icon: Icon,
   type = "text",
   isSecured = false,
   error = "",
@@ -175,12 +175,16 @@ function SignupScreen() {
     email: string;
     hall: string;
     password: string;
+    department: string;
+    school: string;
   }>({
     fullname: "",
     matricNo: "",
     email: "",
     hall: "",
     password: "",
+    department: "",
+    school: "",
   });
 
   const [staffRole, setStaffRole] = useState<{
@@ -224,18 +228,23 @@ function SignupScreen() {
       email: string;
       hall: string;
       password: string;
+      department: string;
+      school: string;
     } = {
       fullname: "",
       matricNo: "",
       email: "",
       hall: "",
       password: "",
+      department: "",
+      school: "",
     };
 
     if (role === "student") {
       if (!fullname) newErrors.fullname = "Full name is required";
       if (!matricNo) newErrors.matricNo = "Matric number is required";
       if (!email) newErrors.email = "Email is required";
+      if (!department) newErrors.department = "Department is required";
       if (!hallName) newErrors.hall = "Hall is required";
       else if (!/\S+@\S+\.\S+/.test(email))
         newErrors.email = "Email is invalid";
@@ -247,6 +256,7 @@ function SignupScreen() {
       return Object.keys(newErrors).length === 0;
     } else {
       if (!fullname) newErrors.fullname = "Full name is required";
+      if (!department) newErrors.department = "Department is required";
       // if (!matricNo) newErrors.matricNo = "Matric number is required";
       if (!email) newErrors.email = "Email is required";
       // if (!hall) newErrors.hall = "Hall is required";
@@ -357,6 +367,8 @@ function SignupScreen() {
                 placeholder="John Doe"
                 hint="Full Name"
                 icon={User}
+                type="text"
+                isSecured={false}
                 error={errors.fullname}
               />
             </motion.div>
@@ -369,6 +381,8 @@ function SignupScreen() {
                   placeholder="22/1203"
                   hint="Matric No"
                   icon={Briefcase}
+                  type="text"
+                  isSecured={false}
                   error={errors.matricNo || ""}
                 />
               ) : (
@@ -406,6 +420,9 @@ function SignupScreen() {
                   placeholder="Computing"
                   hint="School"
                   icon={BookOpen}
+                  type="text"
+                  isSecured={false}
+                  error={errors.school}
                 />
               </motion.div>
             ) : null}
@@ -418,6 +435,9 @@ function SignupScreen() {
                   placeholder="Software Engineering"
                   hint="Department"
                   icon={Building}
+                  type="text"
+                  isSecured={false}
+                  error={errors.department}
                 />
               </motion.div>
             ) : staffRole?.label.slice(0, 4).toLowerCase() ===
@@ -430,6 +450,9 @@ function SignupScreen() {
                   placeholder="Software Engineering"
                   hint="Department"
                   icon={Building}
+                  type="text"
+                  isSecured={false}
+                  error={errors.department}
                 />
               </motion.div>
             )}
@@ -477,6 +500,7 @@ function SignupScreen() {
               }
               hint="Email Address"
               icon={Mail}
+              isSecured={false}
               error={errors.email}
             />
           </motion.div>
