@@ -3,6 +3,55 @@ import { Complaint } from "../models/complaint";
 import axios, { AxiosError } from "axios";
 import { complaintStatus, staffFilterOptions } from "../constants/constants";
 
+export interface ComplaintResponse {
+  id: string;
+  student_id: number;
+  category: ComplaintCategoryResponse;
+  priority_id: number | null;
+  title: string;
+  description: string;
+  file_url: string | null;
+  status: string;
+  complaint_assignment: ComplaintAssignmentResponse | null;
+  created_at: string;
+}
+
+export interface ComplaintCategoryResponse {
+  id: number;
+  name: string;
+}
+
+export interface ComplaintAssignmentResponse {
+  id: number;
+  staff: StaffResponse;
+  complaint_id: number;
+  status: string;
+  response: string | null;
+  internal_notes: string | null;
+  assigned_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+  expected_resolution_date: string | null;
+  follow_up_actions: string | null;
+  attachments: string[] | null;
+}
+
+export interface StaffResponse {
+  id: number;
+  email: string;
+  fullname: string;
+  department: string;
+  hall_name: string | null;
+  image_url: string;
+  role: RoleResponse;
+  created_at: string;
+}
+
+export interface RoleResponse {
+  id: number;
+  name: string;
+}
+
 export interface ComplaintData {
   title: string;
   description: string;
@@ -204,8 +253,8 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
         console.log("An error occured");
       }
 
-      const complaints = response.data.data.map((complaint) =>
-        Complaint.fromJson(complaint)
+      const complaints = response.data.data.map(
+        (complaint: ComplaintResponse) => Complaint.fromJson(complaint)
       );
       console.log(complaints);
 
@@ -325,8 +374,8 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
         return;
       }
 
-      const complaints = response.data.data.map((complaint) =>
-        Complaint.fromJson(complaint)
+      const complaints = response.data.data.map(
+        (complaint: ComplaintResponse) => Complaint.fromJson(complaint)
       );
 
       set({ staffResolvedComplaints: complaints });
@@ -351,8 +400,8 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
         return;
       }
 
-      const staffComplaints = response.data.data.map((complaint) =>
-        Complaint.fromJson(complaint)
+      const staffComplaints = response.data.data.map(
+        (complaint: ComplaintResponse) => Complaint.fromJson(complaint)
       );
       console.log(staffComplaints);
 
@@ -378,8 +427,8 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
         return;
       }
 
-      const allComplaints = response.data.data.map((complaint) =>
-        Complaint.fromJson(complaint)
+      const allComplaints = response.data.data.map(
+        (complaint: ComplaintResponse) => Complaint.fromJson(complaint)
       );
 
       console.log(allComplaints);

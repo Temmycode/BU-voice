@@ -1,3 +1,4 @@
+import { ComplaintAssignmentResponse } from "../clients/complaintClientStore";
 import { Staff } from "./staff";
 
 export class ComplaintAssignment {
@@ -42,10 +43,10 @@ export class ComplaintAssignment {
     this.attachments = attachments;
   }
 
-  static fromJson(json: any): ComplaintAssignment {
+  static fromJson(json: ComplaintAssignmentResponse): ComplaintAssignment {
     return new ComplaintAssignment(
       json.id,
-      json.staff,
+      Staff.fromJson(json.staff),
       json.complaint_id,
       json.status,
       json.response,

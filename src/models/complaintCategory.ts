@@ -1,3 +1,5 @@
+import { ComplaintCategoryResponse } from "../clients/complaintClientStore";
+
 export class ComplaintCategory {
   id: number;
   name: string;
@@ -7,7 +9,7 @@ export class ComplaintCategory {
     this.name = name;
   }
 
-  static fromJson(json: any): ComplaintCategory {
+  static fromJson(json: ComplaintCategoryResponse): ComplaintCategory {
     return new ComplaintCategory(json.id, json.name);
   }
 

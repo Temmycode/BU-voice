@@ -1,3 +1,5 @@
+import { RoleResponse, StaffResponse } from "../clients/complaintClientStore";
+
 export class Role {
   id: number;
   name: string;
@@ -7,7 +9,7 @@ export class Role {
     this.name = name;
   }
 
-  static fromJson(json: any): Role {
+  static fromJson(json: RoleResponse): Role {
     return new Role(json.id, json.name);
   }
 
@@ -49,7 +51,7 @@ export class Staff {
     this.created_at = created_at;
   }
 
-  static fromJson(json: any): Staff {
+  static fromJson(json: StaffResponse): Staff {
     return new Staff(
       json.id,
       json.email,

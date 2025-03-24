@@ -1,3 +1,4 @@
+import { ComplaintResponse } from "../clients/complaintClientStore";
 import { ComplaintAssignment } from "./complaintAssignment";
 import { ComplaintCategory } from "./complaintCategory";
 
@@ -37,7 +38,7 @@ export class Complaint {
     this.createdAt = createdAt;
   }
 
-  static fromJson(json: any): Complaint {
+  static fromJson(json: ComplaintResponse): Complaint {
     return new Complaint(
       json.id,
       json.student_id,
