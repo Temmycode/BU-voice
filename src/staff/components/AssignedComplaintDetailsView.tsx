@@ -21,18 +21,8 @@ import type { Complaint } from "../../models/complaint";
 import { formatDate, formatTime } from "../../utils/dateFormatter";
 import { ClipLoader } from "react-spinners";
 import { useComplaintClientStore } from "../../clients/complaintClientStore";
-import { Student } from "../../models/student";
-import { motion } from "framer-motion";
-import ProgressTracker from "../../components/ProgressTracker";
 
-// Status step mapping for progress tracker
-const statusSteps: Record<string, number> = {
-  pending: 0,
-  "in progress": 1,
-  resolved: 2,
-  rejected: -1,
-  "on hold": 0.5,
-};
+import ProgressTracker from "../../components/ProgressTracker";
 
 // // Status and priority mappings
 // const statusColors: Record<string, string> = {
@@ -101,7 +91,6 @@ const AssignedComplaintDetailsView: React.FC<ComplaintDetailViewProps> = ({
   const status =
     // complaint.complaintAssignment?.status?.toLowerCase() ||
     complaint.status.toLowerCase();
-  const currentStep = statusSteps[status];
   const priorityId = complaint.priorityId;
 
   const handleOpenResponseDialog = async () => {

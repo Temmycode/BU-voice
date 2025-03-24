@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function ProfilePicture({ imageUrl }: { imageUrl: string }) {
   return (
     // <div className="rounded-full p-2 bg-orange">

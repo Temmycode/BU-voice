@@ -12,7 +12,6 @@ import { useAlert } from "../providers/AlertContext";
 import { useSearchParams } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { Staff } from "../models/staff";
 
 function LoginScreen() {
   const { showAlert } = useAlert();
@@ -21,9 +20,6 @@ function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { loading, studentLogin, staffLogin } = useAuthClientStore();
-  const userInfo: Staff = JSON.parse(localStorage.getItem("user") || "{}") || {
-    fullname: "Staff User",
-  };
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const navigate = useNavigate();

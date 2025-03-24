@@ -5,10 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   BarChart2,
-  CheckCircle,
   ChevronLeft,
   ChevronRight,
-  Clock,
   LogOut,
   MessageSquare,
   User,
@@ -17,12 +15,10 @@ import {
 import { useSidebarStore } from "../../providers/SidebarProvider";
 import { Staff } from "../../models/staff";
 import { getInitials } from "../../utils/dateFormatter";
-import { useComplaintClientStore } from "../../clients/complaintClientStore";
 import NavItem from "../../components/NavItem";
 
 function StaffSideBar() {
   const authStore = useAuthClientStore();
-  const complaintStore = useComplaintClientStore();
   const navigate = useNavigate();
   const sidebarProvider = useSidebarStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,16 +30,6 @@ function StaffSideBar() {
     // setShowLogoutConfirm(false);
     await authStore.logout();
     navigate("/login?role=admin");
-  };
-
-  // Dashboard stats
-  const dashboardStats = {
-    totalComplaints: 124,
-    pendingComplaints: 45,
-    resolvedComplaints: 68,
-    rejectedComplaints: 11,
-    averageResponseTime: "1.5 days",
-    resolutionRate: 78,
   };
 
   // Handlers

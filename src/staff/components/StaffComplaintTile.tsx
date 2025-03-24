@@ -105,7 +105,9 @@ export const ComplaintTile = ({
 
           {/* Status Badge */}
           <div
-            className={`rounded-full ${statusColors[status]} text-xs px-3 py-1 font-medium flex items-center`}
+            className={`rounded-full ${
+              statusColors[status!]
+            } text-xs px-3 py-1 font-medium flex items-center`}
           >
             {status === "pending" && <Clock className="h-3 w-3 mr-1" />}
             {status === "in progress" && (
@@ -114,7 +116,7 @@ export const ComplaintTile = ({
             {status === "resolved" && <CheckCircle className="h-3 w-3 mr-1" />}
             {status === "rejected" && <XCircle className="h-3 w-3 mr-1" />}
             {status === "on hold" && <AlertCircle className="h-3 w-3 mr-1" />}
-            <span className="ml-1">{capitalizeFirstLetter(status)}</span>
+            <span className="ml-1">{capitalizeFirstLetter(status!)}</span>
           </div>
         </div>
 

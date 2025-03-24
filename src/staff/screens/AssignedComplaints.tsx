@@ -2,7 +2,6 @@
 
 import { Search, ArrowUpRight } from "lucide-react";
 import { complaintStatus } from "../../constants/constants";
-import type React from "react";
 import { useState, useEffect } from "react";
 import { useComplaintClientStore } from "../../clients/complaintClientStore";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -18,13 +17,13 @@ import AssignedComplaintDetailsView from "../components/AssignedComplaintDetails
 export default function AssignedComplaints() {
   const complaintStore = useComplaintClientStore();
   const { sidebarCollapsed } = useSidebarStore();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  // const [anchorEl] = useState<HTMLButtonElement | null>(null);
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  // const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
 
@@ -33,25 +32,9 @@ export default function AssignedComplaints() {
     complaintStore.setFilter(complaintStatus[0]);
   }, []);
 
-  const handleDialogOpen = () => {
-    complaintStore.setIsComplaintDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    complaintStore.setIsComplaintDialogOpen(false);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleToggleFilterPanel = () => {
-    setIsFilterOpen(!isFilterOpen);
-  };
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
 
   const handleSelectComplaint = (complaint: Complaint) => {
     setSelectedComplaint(complaint);
@@ -67,10 +50,10 @@ export default function AssignedComplaints() {
     setIsDetailsPanelOpen(!isDetailsPanelOpen);
   };
 
-  function selectFilter(value: string) {
-    complaintStore.setFilter(value);
-    handleClose();
-  }
+  // function selectFilter(value: string) {
+  //   complaintStore.setFilter(value);
+  //   handleClose();
+  // }
 
   const filteredComplaints = complaintStore.staffComplaints?.filter(
     (complaint) => {
@@ -93,8 +76,8 @@ export default function AssignedComplaints() {
     }
   );
 
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  // const open = Boolean(anchorEl);
+  // const id = open ? "simple-popover" : undefined;
 
   const NoDataFoundView = ({ text }: { text: string }) => {
     return (

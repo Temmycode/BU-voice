@@ -110,7 +110,6 @@ export const AdminStaffComplaintDetailView = ({
   const status =
     // selectedComplaint.complaintAssignment?.status?.toLowerCase() ||
     selectedComplaint.status.toLowerCase();
-  const currentStep = statusSteps[status];
   const priorityId = selectedComplaint.priorityId;
 
   return (

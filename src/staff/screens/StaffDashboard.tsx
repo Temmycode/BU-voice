@@ -21,12 +21,6 @@ interface Category {
   name: string;
 }
 
-interface StaffMember {
-  id: number;
-  name: string;
-  department: string;
-}
-
 // Mock data
 const mockCategories: Category[] = [
   { id: 1, name: "Academic" },
@@ -34,13 +28,6 @@ const mockCategories: Category[] = [
   { id: 3, name: "Administrative" },
   { id: 4, name: "Financial" },
   { id: 5, name: "Other" },
-];
-
-const mockStaffMembers: StaffMember[] = [
-  { id: 1, name: "John Doe", department: "IT Support" },
-  { id: 2, name: "Jane Smith", department: "Academic Affairs" },
-  { id: 3, name: "Michael Johnson", department: "Facilities" },
-  { id: 4, name: "Sarah Williams", department: "Student Services" },
 ];
 
 // Dashboard stats
