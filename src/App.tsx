@@ -11,7 +11,6 @@ import { useAlert } from "./providers/AlertContext";
 import StaffDashboardLayout from "./staff/screens/layout";
 import StaffDashboard from "./staff/screens/StaffDashboard";
 import StaffProfile from "./staff/screens/StaffProfile";
-import StaffSettings from "./staff/screens/StaffSettings";
 import LandingPage from "./LandingPage";
 import AssignedComplaints from "./staff/screens/AssignedComplaints";
 
@@ -36,7 +35,6 @@ const router = createBrowserRouter([
       { index: true, element: <StaffDashboard /> },
       { path: "assigned", element: <AssignedComplaints /> },
       { path: "profile", element: <StaffProfile /> },
-      { path: "settings", element: <StaffSettings /> },
     ],
   },
 ]);

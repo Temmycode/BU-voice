@@ -204,7 +204,7 @@ export const useComplaintClientStore = create<ComplaintClient>((set, get) => ({
         console.log("An error occured");
       }
 
-      const complaints = response.data.data.map((complaint: any) =>
+      const complaints = response.data.data.map((complaint) =>
         Complaint.fromJson(complaint)
       );
       console.log(complaints);
